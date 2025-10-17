@@ -1,0 +1,21 @@
+{
+  "asof": "2025-10-17T00:00:00Z",
+  "schema_version": "1.2",
+  "msi": { "composite": 2.85, "credit": 2.6, "energy": 3.1, "vol_liq": 2.9, "human_policy": 2.7, "fx_fragility": 2.8 },
+  "tripwires": {
+    "vix_term_inversion": false,
+    "hyg_lqd_premdisc_5d_abs": 0.18,
+    "wti_curve_state": "backwardation",
+    "sofr_vs_corridor_bps": 3,
+    "rrp_balance_usd_b": 8.1,
+    "srf_usage_usd_b": 3.2,
+    "breadth_spxa50r": 52.0
+  },
+  "kft": 1.02,
+  "egi": 18.5,
+  "ttl_days": 26,
+  "fx": { "dxy": 101.9, "real_10y": 1.65 },
+  "energy": { "wti_front": 78.4, "wti_z1_z6_bps": -85, "natgas_curve_state": "contango" },
+  "credit": { "hy_oas_bps": 380, "ig_oas_bps": 110 },
+  "notes": "Short commentary."
+}
