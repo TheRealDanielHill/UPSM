@@ -1,6 +1,6 @@
 # upsm-data/policy/policy.yaml
-asof: 2025-10-17
-schema_version: 1.0
+asof: 2025-10-18
+schema_version: 1.1
 risk_buckets:
   precious_metals_max: 0.20
   base_metals_max: 0.12
@@ -21,3 +21,49 @@ tripwire_responses:
   breadth_spxa50r_lt_50: {vol_liq: +0.2, ttl: -10%}
   rrp_lt_50b_srf_gt_5b: {vol_liq: +0.3, ttl: -15%}
   energy_dual_red: {vol_liq: +0.3, tighten_bands: 25%}
+options_risk_mgmt:
+  - id: cal_rolldown_if_vertical_costly
+    title: Permit calendar roll-down of naked short puts when defining a vertical costs >2% notional
+    scope:
+      underlyings: ["*"]                 # any single-name or ETF
+      instruments: ["short_put"]
+    applies_if:
+      short_put_open: true               # an uncovered short put exists
+      vertical_defined: false            # no long leg in same expiry/chain
+      long_tail_put_exists: true         # there is a longer-dated protective put (>= 12m further)
+      vertical_completion_cost_pct: "> 0.02"   # estimated debit to add long leg / (spot) >2%
+    action:
+      type: "calendar_roll_down"
+      steps:
+        - "Buy-to-Close current short put (nearer or equal to tail maturity)"
+        - "Sell-to-Open a nearer expiry short put (>= 4m sooner than the closed leg)"
+      parameter_targets:
+        new_expiry_max_months: 9         # nearest-tenor exposure capped at 9 months
+        strike_shift: "down"             # roll *down* in strike
+        new_delta_range: [-0.35, -0.20]  # aim for ~20–35 delta
+        min_otm_buffer_pct: 10           # strike at least 10% below spot at entry
+        net_credit_min_abs: 1.00         # >= $1.00 per contract
+        net_credit_min_pct: 0.25         # or >= 0.25% notional (strike*100)
+      guards:
+        contracts_short_leq_tail: true   # short contracts ≤ long tail contracts
+        margin_utilization_max_pct: 40   # post-trade margin usage must remain ≤40%
+        vega_profile: "net_long_downside" # long-dated put must dominate vega
+    postconditions:
+      must_log_to: "upsm-data/state/trade-log.jsonl"
+      update_metrics:
+        ttl_days: "+0.5"
+        kft_delta: "-0.02"
+        vol_liq_stress: "decrease"
+    reversal_or_completion:
+      # If later pricing improves, complete the vertical cheaply
+      complete_vertical_if:
+        vertical_completion_cost_pct: "<= 0.02"
+      completion_params:
+        add_long_put_same_expiry: true
+        min_width: 40                    # $40 wide or more
+        debit_cap: "min(credit_accumulated_chain, 0.40% notional)"
+      defend_if:
+        short_put_delta: ">= 0.40"       # market drop increases risk
+        or_margin_utilization_pct: ">= 45"
+      defense_action:
+        "Add same-expiry long put (convert to vertical) or roll further down/earlier for credit"
