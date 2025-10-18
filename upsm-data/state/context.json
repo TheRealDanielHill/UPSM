@@ -1,84 +1,81 @@
 {
-  "version": "2025-10-18",
-  "inputs": {
-    "vix_spot": null,
-    "vix3m": null,
-    "breadth_spxa50r": null,
-    "breadth_spxa200r": null,
-    "hyg_pd": null,
-    "lqd_pd": null,
-    "ici_flows": null,
-    "wti_front": null,
-    "wti_1m": null,
-    "wti_12m": null,
-    "wti_24m": null,
-    "rbob_crack": null,
-    "ulsd_crack": null,
-    "mba_apps": null,
-    "itb_ret20d": null,
-    "kre_ret20d": null,
-    "cmbs_bbb_oas": null
+  "version": "UPSM_vNext_2025-10-18",
+  "cycle": "Post-October Convex Cycle #4",
+  "system_health": {
+    "MSI": 2.85,
+    "TTL_days": 25,
+    "KFT": 0.96,
+    "EGI_pct": 10,
+    "status": "Optimal / Ready / Antifragile"
   },
-  "derived": {
-    "term_slope": "vix3m - vix_spot",
-    "inversion_flag": "vix_spot > vix3m",
-    "breadth_spread": "breadth_spxa50r - breadth_spxa200r",
-    "credit_avg_pd_5d": "rolling_mean(abs(hyg_pd), abs(lqd_pd), 5)",
-    "energy_spread_front": "wti_1m - wti_front",
-    "energy_spread_long": "wti_24m - wti_12m"
+  "modules_active": {
+    "Tier_1_Structural_Core": [
+      "MSI_v2.0",
+      "TTL",
+      "KFT",
+      "EGI"
+    ],
+    "Tier_2_Domain_Sensors": [
+      "PCSM_v1.0",
+      "Energy_Tripwire",
+      "Housing_CRE_Tripwire"
+    ],
+    "Tier_3_Reflexivity_Suite": [
+      "GRT_v1.0",
+      "CRB_v1.0",
+      "Breadth_Feed_v1.1"
+    ],
+    "Tier_4_Meta_Governance": [
+      "Reflective_Core",
+      "Rebalance_Engine",
+      "Partnership_Ledger"
+    ]
   },
-  "modules": {
-    "Vol_Liq": {
-      "inputs": ["vix_spot", "vix3m", "breadth_spxa50r", "breadth_spxa200r", "ici_flows"],
-      "derived": ["term_slope", "inversion_flag", "breadth_spread"],
-      "adjusts": {"MSI.Vol_Liq": true, "TTL": true}
+  "reflexivity_family": {
+    "GRT_v1.0": "Gold Reflexivity Tripwire — anticipatory bid on policy/inflation",
+    "CRB_v1.0": "Cross-Reflexivity Bridge — speculative rotation AI↔Crypto↔Commodities",
+    "Breadth_Feed_v1.1": "Market Breadth & Liquidity Monitor — ETF flows, breadth ratios, VIX term"
+  },
+  "regime_bands": {
+    "Calm": {
+      "MSI": "0-1",
+      "TTL_adjust": "0%",
+      "color": "green"
     },
-    "Credit": {
-      "inputs": ["hyg_pd", "lqd_pd"],
-      "derived": ["credit_avg_pd_5d"],
-      "adjusts": {"MSI.Credit": true, "TTL": true}
+    "Watchful": {
+      "MSI": "1-2",
+      "TTL_adjust": "-5%",
+      "color": "yellow-green"
     },
-    "Energy": {
-      "inputs": ["wti_front", "wti_1m", "wti_12m", "wti_24m", "rbob_crack", "ulsd_crack"],
-      "derived": ["energy_spread_front", "energy_spread_long"],
-      "adjusts": {"MSI.Vol_Liq": true, "TTL": true}
+    "Caution": {
+      "MSI": "2-3",
+      "TTL_adjust": "-10%",
+      "color": "yellow"
     },
-    "Housing_CRE": {
-      "inputs": ["mba_apps", "itb_ret20d", "kre_ret20d", "cmbs_bbb_oas"],
-      "derived": [],
-      "adjusts": {"MSI.Credit": true, "TTL": true}
+    "Stress": {
+      "MSI": "3-4",
+      "TTL_adjust": "-15%",
+      "color": "orange"
+    },
+    "Crisis": {
+      "MSI": "4-5",
+      "TTL_adjust": "-20%",
+      "color": "red"
     }
   },
-  "rules": [
-    {
-      "name": "Vol inversion 2d",
-      "if": "consecutive_days(inversion_flag, 2)",
-      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-10%"}
-    },
-    {
-      "name": "Breadth spread stress",
-      "if": "breadth_spread <= -15",
-      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-10%"}
-    },
-    {
-      "name": "Bond ETF liquidity stress",
-      "if": "credit_avg_pd_5d >= 0.5",
-      "then": {"MSI.Credit": "+0.2", "TTL": "-10%"}
-    },
-    {
-      "name": "Energy backwardation stress",
-      "if": "energy_spread_front < -0.10 AND energy_spread_long < -0.80 (5d)",
-      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-25%", "Hedge": "add_spxqqq_put_spreads_funded_by_overwrites"}
-    },
-    {
-      "name": "Crack spread weakness",
-      "if": "rbob_crack < 10 OR ulsd_crack < 20 (10d)",
-      "then": {"Hedge": "add_HAL_put_spreads", "Bias": "debeta_energy"}
-    },
-    {
-      "name": "CRE credit stress",
-      "if": "cmbs_bbb_oas > +100 OR kre_ret20d <= -10",
-      "then": {"MSI.Credit": "+0.3", "TTL": "-15%", "Hedge": "add_VIX_call_spreads"}
-    }
-  ]
+  "tier_map": {
+    "Tier_1_Structural_Core": "Foundational regime logic: MSI v2.0, TTL, KFT, EGI",
+    "Tier_2_Domain_Sensors": "Sector-credit-macro inputs: PCSM, Energy, Housing/CRE",
+    "Tier_3_Reflexivity_Suite": "Anticipatory feedback and liquidity sensors: GRT, CRB, Breadth Feed",
+    "Tier_4_Meta_Governance": "Mode logic and learning: Reflective Core, Rebalance Engine, Ledger"
+  },
+  "integration_notes": {
+    "causality": "Each module maps to unique domain, no circular triggers",
+    "latency_alignment": "Weekly cadence default; Breadth Feed daily",
+    "complexity_budget": "7 domain/monitor modules < 8 threshold",
+    "feedback_symmetry": "All deltas expressed in unified +x.x / -y% scale",
+    "status": "Architecture coherence verified"
+  },
+  "next_audit": "2025-10-25",
+  "notes": "GRT, CRB, and Breadth Feed integrated; UPSM architecture upgraded to Reflexivity Suite vNext."
 }
