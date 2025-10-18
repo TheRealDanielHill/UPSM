@@ -1,0 +1,14 @@
+Analyze with Pseudo-Integration + Red Team:
+
+1) Core Thesis (≤3 bullets)
+2) Evidence Snapshot (data points w/ source names)
+3) UPSM Mapping:
+   - Domain(s): [Vol/Liq | Credit | Energy | Housing/CRE | Human/Policy | FX]
+   - Proposed Deltas: MSI:+x.x, TTL:−y%
+   - Tripwire Candidates (exact thresholds)
+4) Red Team:
+   - Strongest counter-arguments
+   - Failure modes / what would falsify
+5) Net Signal Score (0–5) and Confidence (Low/Med/High)
+6) Promote to UPSM Core? [Yes/No]
+   - If Yes → One-liner (≤180 chars) for ledger + required next check
