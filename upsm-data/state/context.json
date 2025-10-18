@@ -1,21 +1,84 @@
 {
-  "asof": "2025-10-17T00:00:00Z",
-  "schema_version": "1.2",
-  "msi": { "composite": 2.85, "credit": 2.6, "energy": 3.1, "vol_liq": 2.9, "human_policy": 2.7, "fx_fragility": 2.8 },
-  "tripwires": {
-    "vix_term_inversion": false,
-    "hyg_lqd_premdisc_5d_abs": 0.18,
-    "wti_curve_state": "backwardation",
-    "sofr_vs_corridor_bps": 3,
-    "rrp_balance_usd_b": 8.1,
-    "srf_usage_usd_b": 3.2,
-    "breadth_spxa50r": 52.0
+  "version": "2025-10-18",
+  "inputs": {
+    "vix_spot": null,
+    "vix3m": null,
+    "breadth_spxa50r": null,
+    "breadth_spxa200r": null,
+    "hyg_pd": null,
+    "lqd_pd": null,
+    "ici_flows": null,
+    "wti_front": null,
+    "wti_1m": null,
+    "wti_12m": null,
+    "wti_24m": null,
+    "rbob_crack": null,
+    "ulsd_crack": null,
+    "mba_apps": null,
+    "itb_ret20d": null,
+    "kre_ret20d": null,
+    "cmbs_bbb_oas": null
   },
-  "kft": 1.02,
-  "egi": 18.5,
-  "ttl_days": 26,
-  "fx": { "dxy": 101.9, "real_10y": 1.65 },
-  "energy": { "wti_front": 78.4, "wti_z1_z6_bps": -85, "natgas_curve_state": "contango" },
-  "credit": { "hy_oas_bps": 380, "ig_oas_bps": 110 },
-  "notes": "Short commentary."
+  "derived": {
+    "term_slope": "vix3m - vix_spot",
+    "inversion_flag": "vix_spot > vix3m",
+    "breadth_spread": "breadth_spxa50r - breadth_spxa200r",
+    "credit_avg_pd_5d": "rolling_mean(abs(hyg_pd), abs(lqd_pd), 5)",
+    "energy_spread_front": "wti_1m - wti_front",
+    "energy_spread_long": "wti_24m - wti_12m"
+  },
+  "modules": {
+    "Vol_Liq": {
+      "inputs": ["vix_spot", "vix3m", "breadth_spxa50r", "breadth_spxa200r", "ici_flows"],
+      "derived": ["term_slope", "inversion_flag", "breadth_spread"],
+      "adjusts": {"MSI.Vol_Liq": true, "TTL": true}
+    },
+    "Credit": {
+      "inputs": ["hyg_pd", "lqd_pd"],
+      "derived": ["credit_avg_pd_5d"],
+      "adjusts": {"MSI.Credit": true, "TTL": true}
+    },
+    "Energy": {
+      "inputs": ["wti_front", "wti_1m", "wti_12m", "wti_24m", "rbob_crack", "ulsd_crack"],
+      "derived": ["energy_spread_front", "energy_spread_long"],
+      "adjusts": {"MSI.Vol_Liq": true, "TTL": true}
+    },
+    "Housing_CRE": {
+      "inputs": ["mba_apps", "itb_ret20d", "kre_ret20d", "cmbs_bbb_oas"],
+      "derived": [],
+      "adjusts": {"MSI.Credit": true, "TTL": true}
+    }
+  },
+  "rules": [
+    {
+      "name": "Vol inversion 2d",
+      "if": "consecutive_days(inversion_flag, 2)",
+      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-10%"}
+    },
+    {
+      "name": "Breadth spread stress",
+      "if": "breadth_spread <= -15",
+      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-10%"}
+    },
+    {
+      "name": "Bond ETF liquidity stress",
+      "if": "credit_avg_pd_5d >= 0.5",
+      "then": {"MSI.Credit": "+0.2", "TTL": "-10%"}
+    },
+    {
+      "name": "Energy backwardation stress",
+      "if": "energy_spread_front < -0.10 AND energy_spread_long < -0.80 (5d)",
+      "then": {"MSI.Vol_Liq": "+0.3", "TTL": "-25%", "Hedge": "add_spxqqq_put_spreads_funded_by_overwrites"}
+    },
+    {
+      "name": "Crack spread weakness",
+      "if": "rbob_crack < 10 OR ulsd_crack < 20 (10d)",
+      "then": {"Hedge": "add_HAL_put_spreads", "Bias": "debeta_energy"}
+    },
+    {
+      "name": "CRE credit stress",
+      "if": "cmbs_bbb_oas > +100 OR kre_ret20d <= -10",
+      "then": {"MSI.Credit": "+0.3", "TTL": "-15%", "Hedge": "add_VIX_call_spreads"}
+    }
+  ]
 }

@@ -1,0 +1,82 @@
+{
+  "vix_spot": {
+    "refresh": "daily",
+    "update_est": "22:00 ET",
+    "source": "FRED:VIXCLS"
+  },
+  "vix3m": {
+    "refresh": "daily",
+    "update_est": "20:30 ET",
+    "source": "Cboe: VIX3M (VXV)"
+  },
+  "breadth_spxa50r": {
+    "refresh": "daily_close",
+    "source": "StockCharts:$SPXA50R"
+  },
+  "breadth_spxa200r": {
+    "refresh": "daily_close",
+    "source": "StockCharts:$SPXA200R"
+  },
+  "hyg_pd": {
+    "refresh": "daily",
+    "update_est": "19:00 ET",
+    "source": "iShares:HYG Premium/Discount %"
+  },
+  "lqd_pd": {
+    "refresh": "daily",
+    "update_est": "19:00 ET",
+    "source": "iShares:LQD Premium/Discount %"
+  },
+  "ici_flows": {
+    "refresh": "weekly",
+    "update_day": "Wednesday",
+    "source": "Investment Company Institute"
+  },
+  "wti_front": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "CME/Barchart: CL front month"
+  },
+  "wti_1m": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "CME/Barchart: CL +1M"
+  },
+  "wti_12m": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "CME/Barchart: CL +12M"
+  },
+  "wti_24m": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "CME/Barchart: CL +24M"
+  },
+  "rbob_crack": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "RBOB crack proxy"
+  },
+  "ulsd_crack": {
+    "refresh": "intraday",
+    "sample": "US_open",
+    "source": "ULSD crack proxy"
+  },
+  "mba_apps": {
+    "refresh": "weekly",
+    "update_day": "Wednesday",
+    "source": "MBA Weekly Mortgage Applications"
+  },
+  "itb_ret20d": {
+    "refresh": "daily_close",
+    "source": "ITB 20D return"
+  },
+  "kre_ret20d": {
+    "refresh": "daily_close",
+    "source": "KRE 20D return"
+  },
+  "cmbs_bbb_oas": {
+    "refresh": "weekly",
+    "source": "CMBS BBB- OAS vs 6m avg"
+  }
+}
