@@ -1,0 +1,28 @@
+# UPSM Prompt Spec
+# Version: 2025-10-18
+# Purpose: Run MSI Fast-Pass using canonical feeds and rules; produce header + action bias.
+# Invocation Context: Audit
+# Output Format: tiles table + MSI/TTL + action bias + ledger entry
+
+INSTRUCTIONS TO ASSISTANT:
+Use the repo configs:
+- /upsm-data/feeds/refresh_schedule.json (cadence)
+- /upsm-data/state/context.json (inputs, derived, modules, rules)
+- /upsm-data/feeds/signal_purpose_map.md (semantics)
+
+Steps:
+1) Data Freshness: list which feeds are due now vs current.
+2) Compute Derived:
+   - term_slope, inversion_flag, breadth_spread, credit_avg_pd_5d,
+     energy_spread_front, energy_spread_long.
+3) Evaluate Rules → produce MSI domain deltas and TTL change.
+4) Header:
+   - Composite MSI (band), TTL (days), KFT, EGI (if available).
+5) Action Bias Table:
+   - Cash / Equity / Commodity / Crypto / Convex / FI-FX with brief guidance.
+6) Ledger Entry:
+   - Date, MSI, TTL, key triggers (✓/✗), one-sentence narrative.
+
+Constraints:
+- Use strict thresholds from context.json.
+- If a feed is stale by cadence, mark "Pending refresh" and proceed with base case.

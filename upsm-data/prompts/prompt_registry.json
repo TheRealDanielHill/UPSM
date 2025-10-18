@@ -1,0 +1,57 @@
+{
+  "version": "2025-10-18",
+  "registry": [
+    {
+      "id": "analyze_news_source",
+      "file": "Analyze_News_Source.txt",
+      "purpose": "Pseudo-integration + red-team on a single source (video/article) to decide promotion into UPSM.",
+      "invocation_context": "Exploration",
+      "outputs": ["card", "promote_one_liner"],
+      "affects": {
+        "MSI": false,
+        "TTL": false,
+        "Ledger": "on_promotion"
+      },
+      "tags": ["macro", "news", "youtube", "policy", "credit", "energy"]
+    },
+    {
+      "id": "fast_pass_audit",
+      "file": "Fast_Pass_Audit.txt",
+      "purpose": "Run the daily/weekly MSI Fast-Pass using canonical feeds; compute derived metrics and tripwires.",
+      "invocation_context": "Audit",
+      "outputs": ["tiles_table", "MSI_TTL_header", "action_bias"],
+      "affects": {
+        "MSI": true,
+        "TTL": true,
+        "Ledger": "always"
+      },
+      "tags": ["msi", "ttl", "tiles", "breadth", "vix", "wti"]
+    },
+    {
+      "id": "red_team_template",
+      "file": "Red_Team_Template.txt",
+      "purpose": "Adversarial review of a thesis or trade; enumerate failure modes and falsifiers.",
+      "invocation_context": "Reflection",
+      "outputs": ["risk_table", "falsifiers", "confidence_score"],
+      "affects": {
+        "MSI": false,
+        "TTL": false,
+        "Ledger": "optional"
+      },
+      "tags": ["risk", "assumptions", "counterargument"]
+    },
+    {
+      "id": "upsm_integration_request",
+      "file": "UPSM_Integration_Request.txt",
+      "purpose": "Convert a promoted signal into concrete UPSM deltas (MSI/TTL), tile updates, and a ledger entry.",
+      "invocation_context": "Rebalance",
+      "outputs": ["domain_deltas", "tripwire_spec", "ledger_entry"],
+      "affects": {
+        "MSI": true,
+        "TTL": true,
+        "Ledger": "always"
+      },
+      "tags": ["integration", "tiles", "ledger"]
+    }
+  ]
+}

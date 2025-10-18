@@ -1,0 +1,15 @@
+# UPSM Prompt Spec
+# Version: 2025-10-18
+# Purpose: Structured adversarial review of a thesis or trade.
+# Invocation Context: Reflection
+# Output Format: risk table + falsifiers + confidence score
+
+INSTRUCTIONS TO ASSISTANT:
+Return:
+1) Assumptions at Risk (bulleted, prioritized)
+2) Counter-Arguments (strongest first; include data if available)
+3) Failure Modes (how this goes wrong operationally/financially)
+4) Falsifiers (specific data that would invalidate the thesis)
+5) Residual Risk Table
+   - Category | Likelihood (L/M/H) | Impact (L/M/H) | Mitigation
+6) Confidence (Low/Med/High) and Why

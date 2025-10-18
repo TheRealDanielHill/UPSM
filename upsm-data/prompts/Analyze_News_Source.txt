@@ -1,14 +1,25 @@
-Analyze with Pseudo-Integration + Red Team:
+# UPSM Prompt Spec
+# Version: 2025-10-18
+# Purpose: Pseudo-integration + Red Team on one video/article to decide promotion into UPSM.
+# Invocation Context: Exploration
+# Output Format: one compact card + (optional) promote one-liner
+
+INSTRUCTIONS TO ASSISTANT:
+Return exactly this structure:
 
 1) Core Thesis (≤3 bullets)
-2) Evidence Snapshot (data points w/ source names)
-3) UPSM Mapping:
-   - Domain(s): [Vol/Liq | Credit | Energy | Housing/CRE | Human/Policy | FX]
-   - Proposed Deltas: MSI:+x.x, TTL:−y%
-   - Tripwire Candidates (exact thresholds)
-4) Red Team:
+2) Evidence Snapshot (specific data points + named sources with timestamps)
+3) UPSM Mapping
+   - Domains: [Vol/Liq | Credit | Energy | Housing/CRE | Human/Policy | FX]
+   - Proposed Deltas (if any): MSI:+x.x by domain, TTL:−y%
+   - Candidate Tripwires: explicit thresholds sourced from UPSM canon
+4) Red Team
    - Strongest counter-arguments
-   - Failure modes / what would falsify
+   - Failure modes / Falsifiers (what data would reverse the claim)
 5) Net Signal Score (0–5) and Confidence (Low/Med/High)
 6) Promote to UPSM Core? [Yes/No]
-   - If Yes → One-liner (≤180 chars) for ledger + required next check
+   - If Yes → One-liner ≤180 chars for the ledger + next check
+
+NOTES:
+- Prioritize primary data over commentary; cite dates.
+- If signal duplicates an existing tile, mark "Duplicate" and stop.

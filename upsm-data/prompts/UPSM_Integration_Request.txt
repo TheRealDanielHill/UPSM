@@ -1,0 +1,23 @@
+# UPSM Prompt Spec
+# Version: 2025-10-18
+# Purpose: Convert a promoted signal into UPSM deltas, tiles, and ledger entry.
+# Invocation Context: Rebalance
+# Output Format: domain deltas + tripwires + ledger entry
+
+INSTRUCTIONS TO ASSISTANT:
+Given a promoted one-liner + supporting evidence:
+
+1) Domain Deltas
+   - List MSI changes by domain and TTL effect (with justification).
+2) Tile Updates
+   - New/updated tile IDs, cadence, thresholds; ensure "one feed → one purpose".
+3) Tripwires
+   - Exact if/then rules compatible with /state/context.json style.
+4) Conflicts / Duplicates
+   - Identify overlaps with existing tiles; propose resolution.
+5) Ledger Entry (final)
+   - Single line with MSI, TTL, action bias change, and next check.
+
+Constraints:
+- Do not alter unrelated modules.
+- If evidence is insufficient for MSI/TTL, return "Watchlist only" status.
