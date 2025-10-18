@@ -1,0 +1,23 @@
+# upsm-data/policy/policy.yaml
+asof: 2025-10-17
+schema_version: 1.0
+risk_buckets:
+  precious_metals_max: 0.20
+  base_metals_max: 0.12
+  energy_producers_max: 0.15
+  tech_innovation_max: 0.15
+  cash_min: 0.10
+  convex_hedge_min: 0.10
+risk_rules:
+  - no naked VIX shorts
+  - short puts must be spreaded or hedged same expiry
+  - covered calls ≤ underlying shares
+  - TTL target 24–30 days in thin liquidity regime
+  - MSI >3 → tighten drift bands 33%
+  - EGI >25% → trigger Ergodicity Stress Mode
+tripwire_responses:
+  vix_term_inversion: {vol_liq: +0.3, ttl: -10%}
+  hyg_lqd_premdisc_5d_abs_gt_0.5: {credit: +0.2, ttl: -10%}
+  breadth_spxa50r_lt_50: {vol_liq: +0.2, ttl: -10%}
+  rrp_lt_50b_srf_gt_5b: {vol_liq: +0.3, ttl: -15%}
+  energy_dual_red: {vol_liq: +0.3, tighten_bands: 25%}
