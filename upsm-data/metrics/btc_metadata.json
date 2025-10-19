@@ -1,0 +1,27 @@
+{
+  "asset": "BTC-USD",
+  "source_file": "Bitcoin_Through_2025-10-01.csv",
+  "standardization": {
+    "date_key": "date (UTC; daily close aggregated from timeClose day)",
+    "ohlcv": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "volume",
+      "mcap"
+    ],
+    "resample_rules": {
+      "daily": "calendar day",
+      "monthly": "month end"
+    },
+    "derived_fields": [
+      "ret_d",
+      "logret_d",
+      "roll_30d_vol (ann)",
+      "roll_90d_vol (ann)",
+      "drawdown"
+    ]
+  },
+  "last_updated": "2025-10-19T14:10:38.214320"
+}
