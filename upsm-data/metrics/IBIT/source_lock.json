@@ -1,0 +1,50 @@
+{
+  "instrument": "IBIT",
+  "preferred_order": [
+    "ishares_fund_page",
+    "nasdaq_prices",
+    "yahoo_finance",
+    "etfcom"
+  ],
+  "sources": {
+    "ishares_fund_page": {
+      "name": "iShares Fund Page \u2014 IBIT",
+      "url": "https://www.ishares.com/us/products/333607/ishares-bitcoin-trust",
+      "fields": [
+        "date",
+        "net_flow_usd",
+        "shares_outstanding",
+        "aum_usd"
+      ],
+      "licensing": "Free; provider terms apply."
+    },
+    "nasdaq_prices": {
+      "name": "Nasdaq \u2014 IBIT",
+      "url": "https://www.nasdaq.com/market-activity/funds-and-etfs/ibit",
+      "fields": [
+        "date",
+        "close_usd"
+      ],
+      "licensing": "Free; provider terms apply."
+    },
+    "yahoo_finance": {
+      "name": "Yahoo Finance \u2014 IBIT",
+      "url": "https://finance.yahoo.com/quote/IBIT",
+      "fields": [
+        "date",
+        "close_usd"
+      ],
+      "licensing": "Free; provider terms apply."
+    },
+    "etfcom": {
+      "name": "ETF.com \u2014 IBIT",
+      "url": "https://www.etf.com/IBIT",
+      "fields": [
+        "date",
+        "net_flow_usd",
+        "aum_usd"
+      ],
+      "licensing": "Free; provider terms apply."
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "contract": "CME Bitcoin Futures (BTC)",
+  "preferred_order": [
+    "cme_group_settlements",
+    "stooq_continuous",
+    "investing_com_futures"
+  ],
+  "sources": {
+    "cme_group_settlements": {
+      "name": "CME Group \u2014 Settlements",
+      "url": "https://www.cmegroup.com/",
+      "fields": [
+        "date",
+        "settle_usd",
+        "volume",
+        "open_interest"
+      ],
+      "licensing": "Free preview; terms apply."
+    },
+    "stooq_continuous": {
+      "name": "Stooq Continuous",
+      "url": "https://stooq.com/",
+      "fields": [
+        "date",
+        "settle_usd"
+      ],
+      "licensing": "Free; attribution where relevant."
+    },
+    "investing_com_futures": {
+      "name": "Investing.com \u2014 BTC Futures",
+      "url": "https://www.investing.com/crypto/bitcoin/bitcoin-futures",
+      "fields": [
+        "date",
+        "settle_usd"
+      ],
+      "licensing": "Free; registration may be required."
+    }
+  }
+}

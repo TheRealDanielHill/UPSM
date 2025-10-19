@@ -1,0 +1,26 @@
+## 2025-10-19 — Session Closure: UPSM Core & Patch Integration
+
+Status: CLOSED & ARCHIVED
+Scope: Core system evolution, patch bundle, metrics repo kickoff
+
+Key outcomes
+- Approved & logged **Core Intent Statement v1.0**.
+- Shipped **Patch Bundle 2025-10-19** adding:
+  - MPP v1.0 (Macro Pulse Panel)
+  - CLOQDM v1.0 (CLO Quality Drift Monitor)
+  - RME v1.0 (Regime Map Engine)
+  - Metals Crowding Guard (SSM submodule)
+  - Convexity Integrity Check (diagnostic)
+- Initialized **/metrics/** with standardized BTC series:
+  - `btc_usd_daily.csv`, `btc_usd_monthly.csv`,
+  - `btc_summary_2025-10-19.json`, `btc_metadata.json`
+- Agreed process: data lives in repo; holdings remain private in chat.
+
+Handoff
+- Next session: **“UPSM Data Repository Build / Metrics Management”**
+- Start with: BTC gap fill (2025-10-02 → current), then expand metals/indices/macro series.
+- Reference: context patch `context_patch_2025-10-19.json` (active).
+
+Notes
+- Header now expects: `MSI | MPP | TTL | KFT | EGI`.
+- New modules are watchlist/derived; no MSI deltas until tripwires fire.

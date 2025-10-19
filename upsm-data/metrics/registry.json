@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.2.0",
+  "updated_utc": "2025-10-19T15:01:28Z",
+  "datasets": {
+    "BTC_USD_DAILY": {
+      "description": "Raw daily BTC/USD close, canonical CoinGecko; append-only, sharded by year.",
+      "canonical_source": "coingecko",
+      "fallback_sources": [
+        "coindesk_xbx",
+        "investing_com"
+      ],
+      "path_index": "metrics/BTC/daily/index.json",
+      "schema": {
+        "date": "YYYY-MM-DD",
+        "close_usd": "float",
+        "source_id": "string"
+      },
+      "update_cadence": "daily"
+    },
+    "IBIT_DAILY_FLOWS": {
+      "description": "BlackRock iShares Bitcoin Trust (IBIT) daily primary market flow (net creations/redemptions).",
+      "canonical_source": "ishares_fund_page",
+      "fallback_sources": [
+        "nasdaq_fund_flows",
+        "etfcom"
+      ],
+      "path_index": "metrics/IBIT/flows/index.json",
+      "schema": {
+        "date": "YYYY-MM-DD",
+        "net_flow_usd": "float",
+        "shares_outstanding": "float",
+        "aum_usd": "float",
+        "source_id": "string"
+      },
+      "update_cadence": "daily (business days)"
+    },
+    "IBIT_USD_DAILY_CLOSE": {
+      "description": "IBIT market close (USD) (secondary market).",
+      "canonical_source": "nasdaq_prices",
+      "fallback_sources": [
+        "yahoo_finance",
+        "barchart"
+      ],
+      "path_index": "metrics/IBIT/price/index.json",
+      "schema": {
+        "date": "YYYY-MM-DD",
+        "close_usd": "float",
+        "source_id": "string"
+      },
+      "update_cadence": "daily (trading days)"
+    },
+    "CME_BTC_FRONT_SETTLE": {
+      "description": "CME Bitcoin futures front-month official settlement (USD).",
+      "canonical_source": "cme_group_settlements",
+      "fallback_sources": [
+        "stooq_continuous",
+        "investing_com_futures"
+      ],
+      "path_index": "metrics/CME_BTC/front_month_settle/index.json",
+      "schema": {
+        "date": "YYYY-MM-DD",
+        "settle_usd": "float",
+        "volume": "float?",
+        "open_interest": "float?",
+        "source_id": "string"
+      },
+      "update_cadence": "daily (business days)"
+    },
+    "PERP_FUNDING_8H": {
+      "description": "Perpetual futures funding rate snapshots (8h) for major venues; UTC daily aggregate (mean/last).",
+      "canonical_source": "exchange_public_endpoints",
+      "fallback_sources": [
+        "coinglass",
+        "laevitas_free"
+      ],
+      "path_index": "metrics/PERP_FUNDING/8h/index.json",
+      "schema": {
+        "date": "YYYY-MM-DD",
+        "exchange": "string",
+        "symbol": "string",
+        "funding_rate": "float",
+        "window": "string",
+        "source_id": "string"
+      },
+      "update_cadence": "8h; stored as daily aggregates"
+    }
+  }
+}
