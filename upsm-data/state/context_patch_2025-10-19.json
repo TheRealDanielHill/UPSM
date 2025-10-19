@@ -1,0 +1,190 @@
+{
+  "patch_version": "2025-10-19",
+  "patch_name": "UPSM Bundle — MPP, CLOQDM, RME, Metals Crowding Guard, Convexity Integrity, Core Intent v1.0",
+  "status": "ready",
+  "metadata": {
+    "intent": {
+      "core_statement": {
+        "id": "core_intent_v1.0",
+        "title": "UPSM Core Intent Statement (v1.0 — Daniel Hill, Oct 2025)",
+        "text": "To observe and understand how the economic system actually operates — through continuous, data-driven analysis tested against real outcomes — so that only theories that match observed results survive, and those that fail are discarded. The ultimate objective is to maintain a live, self-correcting understanding of where the system stands now and where it is likely to move next — enabling proactive positioning to profit from structural changes while remaining de-risked from surprises.",
+        "alignment": {
+          "feedback_loop": "Embed falsification and iteration in every analysis.",
+          "division_of_effort": "AI explores/tests; human evaluates/curates.",
+          "convexity_principle": "Let greed pay for fear.",
+          "liquidity_principle": "Liquidity as mobilizable capacity (potential → throughput)."
+        },
+        "version": "1.0",
+        "status": "active"
+      }
+    }
+  },
+  "derived_add": {
+    "RME_v1_0": {
+      "id": "RME_v1_0",
+      "name": "Regime Map Engine",
+      "description": "Classify macro state by real-rate sign × inflation bin; used for biasing and scenario framing.",
+      "inputs": ["cpi_yoy", "ust10y_yield", "tips10y_yield_optional"],
+      "derived": {
+        "real_rate": "if tips10y_yield_optional != null then tips10y_yield_optional else ust10y_yield - cpi_yoy",
+        "real_rate_sign": "real_rate >= 0 ? 'positive' : 'negative'",
+        "inflation_bin": "cpi_yoy >= 4 ? 'high' : 'low'",
+        "regime_quadrant": "concat(real_rate_sign == 'positive' ? '+' : '-', '_', inflation_bin)"
+      },
+      "quadrants": {
+        "A": "+_low",
+        "B": "+_high",
+        "C": "-_low",
+        "D": "-_high"
+      },
+      "switch_rule": "Regime changes only when quadrant persists >= 3 consecutive monthly prints.",
+      "affects": {
+        "msi": false,
+        "ttl": false,
+        "bias_templates": true
+      }
+    }
+  },
+  "modules_add": {
+    "MPP_v1_0": {
+      "id": "MPP_v1_0",
+      "name": "Macro Pulse Panel",
+      "purpose": "Track real-economy momentum (growth, trade, labor, sentiment) to complement MSI.",
+      "domain": ["Growth", "Labor", "Trade", "Sentiment"],
+      "tiles": [
+        {"id":"mpp_ism_noi","metric":"ISM Manufacturing New Orders","source":"FRED:NAPMNOI","cadence":"monthly","bands":{">=52":"green","48-52":"yellow","<48":"red"}},
+        {"id":"mpp_lead_lei","metric":"Conference Board LEI (Δ)","source":"FRED/ConferenceBoard","cadence":"monthly","bands":{">0":"green","=0":"yellow","<0":"red"}},
+        {"id":"mpp_freight","metric":"Cass Freight Shipments YoY","source":"Cass Info Systems","cadence":"monthly","bands":{">=5":"green","-5..5":"yellow","<=-5":"red"}},
+        {"id":"mpp_nfibhire","metric":"NFIB Hiring Plans","source":"NFIB","cadence":"monthly","bands":{">20":"green","10-20":"yellow","<10":"red"}},
+        {"id":"mpp_trade","metric":"Global Container Throughput Index (Δ)","source":"RWI/TradingEconomics","cadence":"monthly","bands":{">0":"green","-2..0":"yellow","<-2":"red"}},
+        {"id":"mpp_fundflow","metric":"Global Fund Flows (Equity+Bond, 4w %AUM)","source":"ETF.com/ICI/EPFR summaries","cadence":"weekly","bands":{">=0.3":"green","-0.3..0.3":"yellow","<=-0.3":"red"}},
+        {"id":"mpp_insider","metric":"Insider Buy/Sell Ratio","source":"OpenInsider/Finviz","cadence":"weekly","bands":{">=0.6":"green","0.3-0.6":"yellow","<0.3":"red"}},
+        {"id":"mpp_fiscal","metric":"Fiscal Impulse (Δ %GDP YoY)","source":"IMF Fiscal Monitor / proxy","cadence":"quarterly","bands":{">=0.5":"green","0-0.5":"yellow","<0":"red"}}
+      ],
+      "compute": {
+        "method": "z-score average",
+        "window_months": 24,
+        "weights": {"growth":1.5,"labor":1.2,"trade":1.0,"sentiment":0.8},
+        "formula": "MPP = mean(z_i)"
+      },
+      "bands": [
+        {"range":"0-1","label":"Calm","color":"green"},
+        {"range":"1-2","label":"Watchful","color":"yellow"},
+        {"range":"2-3","label":"Caution","color":"orange"},
+        {"range":"3-4","label":"Stress","color":"red"},
+        {"range":">4","label":"Crisis","color":"crimson"}
+      ],
+      "integration": {
+        "header": true,
+        "ttl_adjust": "TTL_adj = TTL_base * (1 - 0.05 * abs(dMPP))",
+        "cross_matrix": [
+          {"msi_delta":"up","mpp_delta":"down","interpretation":"tightening stress","bias":"maintain convex hedges"},
+          {"msi_delta":"down","mpp_delta":"up","interpretation":"recovery","bias":"rotate into real assets gradually"},
+          {"msi_delta":"up","mpp_delta":"up","interpretation":"overheat","bias":"trim risk; prefer inflation hedges"},
+          {"msi_delta":"down","mpp_delta":"down","interpretation":"policy vacuum","bias":"stay defensive; preserve liquidity"}
+        ],
+        "ledger_log": "Record MSI–MPP divergences >1σ as Momentum Stress Events."
+      }
+    },
+    "CLOQDM_v1_0": {
+      "id": "CLOQDM_v1_0",
+      "name": "CLO Quality Drift Monitor",
+      "purpose": "Detect late-cycle leverage deterioration in loans/CLOs before broad credit stress.",
+      "domain": ["Credit","Vol/Liq"],
+      "tiles": [
+        {"id":"clo_ll_default_rate","metric":"Leveraged Loan Default Rate (LTM, %)","source":"LCD/LevFin proxies","cadence":"monthly"},
+        {"id":"clo_oc_ic_breaches","metric":"CLO OC/IC Test Breaches (count)","source":"Trustee reports/indices","cadence":"monthly_or_quarterly"},
+        {"id":"clo_covlite_share","metric":"Covenant-lite Share in New Issues (%)","source":"LevFin surveys","cadence":"monthly"},
+        {"id":"hy_ig_oas_spread","metric":"HY minus IG OAS (bps)","source":"ICE/Bloomberg proxies","cadence":"daily_weekly"}
+      ],
+      "tripwires": [
+        {
+          "id": "cloqdm_tw1",
+          "if": "clo_ll_default_rate >= 5 AND hy_ig_oas_spread >= (avg12m + 150)",
+          "then": {"MSI.Credit":"+0.2","TTL":"-5%"},
+          "notes": "Confirms broad deterioration and funding stress."
+        },
+        {
+          "id": "cloqdm_tw2",
+          "if": "trend_up(clo_oc_ic_breaches, 2) OR (clo_covlite_share >= 80 AND trend_up(clo_ll_default_rate, 2))",
+          "then": {"MSI.Credit":"+0.3","TTL":"-10%"},
+          "notes": "Structural weakness + realized stress."
+        },
+        {
+          "id": "cloqdm_amp",
+          "if": "MOVE_index >= 120",
+          "then": {"MSI.Vol_Liq":"+0.1"},
+          "notes": "Treasury vol amplifies credit fragility."
+        }
+      ],
+      "dedupe": "Distinct from TBRSM (Treasury/repo plumbing); this is loans/CLO plumbing."
+    },
+    "SSM_CrowdingGuard_v1_0": {
+      "id": "SSM_CrowdingGuard_v1_0",
+      "name": "Metals Crowding Guard (Gold/Silver)",
+      "extends_module": "SSM_v1_0",
+      "domain": ["Vol/Liq"],
+      "tiles": [
+        {"id":"gld_slv_etf_inflow_pct","metric":"GLD/SLV 4w Net Inflows as % AUM","source":"ETF sponsor data","cadence":"weekly"},
+        {"id":"gld_call_skew","metric":"Gold 1M 25Δ Risk Reversal (calls - puts)","source":"Options data","cadence":"daily_weekly"}
+      ],
+      "tripwires": [
+        {
+          "id":"ssm_crowd_1",
+          "if":"gld_slv_etf_inflow_pct >= 3 AND gld_call_skew >= (mean1y + 1σ)",
+          "then":{"portfolio":"tighten_metals_drift_bands_25","overwrites":"pause_short_dated_calls_5d"},
+          "notes":"Crowding; avoid over-harvesting."
+        },
+        {
+          "id":"ssm_crowd_2",
+          "if":"(LBMA_silver_lease_rate > 25) AND (gld_slv_etf_inflow_pct >= 3)",
+          "then":{"funding_preference":"favor_VIX_calls_over_metals_overwrites"},
+          "notes":"Prefer systemic convexity when squeeze + crowding coexist."
+        }
+      ],
+      "msi_effect": "none_direct (portfolio-drift guidance only)"
+    }
+  },
+  "diagnostics_add": {
+    "convexity_integrity_check_v1_0": {
+      "id": "convexity_integrity_check_v1_0",
+      "name": "Convexity Integrity Check",
+      "cadence": "each_portfolio_refresh",
+      "metrics": [
+        {
+          "id":"hedge_coverage_ratio",
+          "formula":"notional_convex_hedges / gross_risk_assets",
+          "target":"0.10-0.20",
+          "action":{"below":"increase_VIX_or_put_hedges","above":"evaluate_over-hedge"}
+        },
+        {
+          "id":"mobility_ratio",
+          "formula":"cash_pct / (TTL_days / 30)",
+          "target":">=0.5",
+          "action":{"below":"raise_cash_buffer"}
+        },
+        {
+          "id":"gpf_compliance",
+          "formula":"income_harvested / hedge_outlay",
+          "target":">=1.0",
+          "action":{"below":"pause_overwrites_and_refuel_hedges"}
+        },
+        {
+          "id":"behavioral_drift_flag",
+          "formula":"(KFT < 0.5 OR KFT > 1.5) OR (EGI > 25)",
+          "target":"false",
+          "action":{"true":"recenter_exposures_and_review_rules"}
+        }
+      ],
+      "render_as_footer_row": true
+    }
+  },
+  "header_display_update": {
+    "include": ["MSI","MPP","TTL","KFT","EGI"],
+    "example": "MSI 2.9 🟠 | MPP 2.3 🟡 | TTL 24 d | KFT 0.96 | EGI 10%"
+  },
+  "governance": {
+    "changelog_file": "upsm-data/changelog/context_patch_2025-10-19.md",
+    "version_note": "core_intent_v1.0 supersedes implicit intent references prior to Oct 2025; future revisions must be versioned under metadata.intent."
+  }
+}
